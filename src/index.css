@@ -170,4 +170,3 @@ All colors MUST be HSL.
     box-shadow: 0 0 20px hsl(var(--primary-glow) / 0.6);
   }
 }
-}
