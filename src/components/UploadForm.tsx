@@ -25,7 +25,6 @@ export function UploadForm() {
   const [store, setStore] = useState("");
   const [subgroup, setSubgroup] = useState("");
   const [session, setSession] = useState("");
-  const [group, setGroup] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
 
@@ -44,9 +43,17 @@ export function UploadForm() {
     { value: "12", label: "Dezembro" }
   ];
 
+  const years = [
+    { value: "2025", label: "2025" },
+    { value: "2026", label: "2026" },
+    { value: "2027", label: "2027" },
+    { value: "2028", label: "2028" },
+    { value: "2029", label: "2029" },
+    { value: "2030", label: "2030" }
+  ];
+
   const stores = [
-    "Loja Centro", "Loja Norte", "Loja Sul", "Loja Leste", "Loja Oeste",
-    "Shopping A", "Shopping B", "Online"
+    "LOJA 01", "LOJA 02", "LOJA 05", "LOJA 07", "LOJA 08", "LOJA 09"
   ];
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +124,7 @@ export function UploadForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!file || !month || !year || !store || !subgroup || !session || !group) {
+    if (!file || !month || !year || !store || !subgroup || !session) {
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos e selecione um arquivo",
@@ -138,7 +145,7 @@ export function UploadForm() {
         .insert({
           month,
           session,
-          group,
+          group: subgroup, // Using subgroup as group since we removed the group field
           subgroup,
           store,
           quantity_sold: excelData.quantitySold,
@@ -166,7 +173,6 @@ export function UploadForm() {
       setStore("");
       setSubgroup("");
       setSession("");
-      setGroup("");
       const fileInput = document.getElementById('file-upload') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
 
@@ -239,15 +245,18 @@ export function UploadForm() {
 
               <div className="space-y-2">
                 <Label htmlFor="year">Ano</Label>
-                <Input
-                  id="year"
-                  type="number"
-                  placeholder="2025"
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                  min="2020"
-                  max="2030"
-                />
+                <Select value={year} onValueChange={setYear}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o ano" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((y) => (
+                      <SelectItem key={y.value} value={y.value}>
+                        {y.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
@@ -273,16 +282,6 @@ export function UploadForm() {
                   placeholder="Ex: Sessão A"
                   value={session}
                   onChange={(e) => setSession(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="group">Grupo</Label>
-                <Input
-                  id="group"
-                  placeholder="Ex: Eletrônicos"
-                  value={group}
-                  onChange={(e) => setGroup(e.target.value)}
                 />
               </div>
 

@@ -1,0 +1,127 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+// Register required Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface SalesData {
+  id: string;
+  month: string;
+  session: string;
+  group: string;
+  subgroup: string;
+  store: string;
+  quantity_sold: number;
+  value_brl: number;
+  profit_brl: number;
+  quantity_percentage: number;
+  value_percentage: number;
+  profit_percentage: number;
+  created_at: string;
+}
+
+interface QuantityChartProps {
+  data: SalesData[];
+}
+
+export function QuantityChart({ data }: QuantityChartProps) {
+  // Group data by subgroup and sum quantities
+  const groupedData = data.reduce((acc, item) => {
+    if (!acc[item.subgroup]) {
+      acc[item.subgroup] = 0;
+    }
+    acc[item.subgroup] += item.quantity_sold || 0;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const chartData = {
+    labels: Object.keys(groupedData),
+    datasets: [
+      {
+        label: 'Quantidade Vendida',
+        data: Object.values(groupedData),
+        backgroundColor: 'rgba(168, 85, 247, 0.7)',
+        borderColor: 'rgba(168, 85, 247, 1)',
+        borderWidth: 1,
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        labels: {
+          color: 'rgb(107, 114, 128)',
+        }
+      },
+      title: {
+        display: true,
+        text: 'Vendas por Quantidade',
+        color: 'rgb(17, 24, 39)',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            return `${context.dataset.label}: ${context.parsed.y.toLocaleString('pt-BR')} unidades`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: 'rgb(107, 114, 128)',
+          callback: function(value: any) {
+            return `${value.toLocaleString('pt-BR')}`;
+          }
+        },
+        grid: {
+          color: 'rgba(107, 114, 128, 0.1)',
+        }
+      },
+      x: {
+        ticks: {
+          color: 'rgb(107, 114, 128)',
+        },
+        grid: {
+          color: 'rgba(107, 114, 128, 0.1)',
+        }
+      }
+    }
+  };
+
+  return (
+    <Card className="shadow-card border-0 bg-gradient-card">
+      <CardHeader>
+        <CardTitle>Vendas em Quantidade</CardTitle>
+        <CardDescription>
+          Quantidade total vendida por subgrupo
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div style={{ position: 'relative', height: '400px' }}>
+          <Bar data={chartData} options={options} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

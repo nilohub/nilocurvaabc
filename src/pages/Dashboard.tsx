@@ -4,9 +4,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
-import { SalesChart } from "@/components/charts/SalesChart";
-import { ProfitChart } from "@/components/charts/ProfitChart";
-import { PerformanceMetrics } from "@/components/charts/PerformanceMetrics";
+import { RevenueChart } from "@/components/charts/RevenueChart";
+import { ProfitBRLChart } from "@/components/charts/ProfitBRLChart";
+import { QuantityChart } from "@/components/charts/QuantityChart";
+import { TopSubgroupsTable } from "@/components/charts/TopSubgroupsTable";
 import { DataTable } from "@/components/DataTable";
 import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp, DollarSign, Package, Percent, Filter, Download } from "lucide-react";
@@ -348,11 +349,14 @@ export default function Dashboard() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SalesChart data={filteredData} />
-          <ProfitChart data={filteredData} />
+          <ProfitBRLChart data={filteredData} />
+          <RevenueChart data={filteredData} />
         </div>
 
-        <PerformanceMetrics data={filteredData} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <QuantityChart data={filteredData} />
+          <TopSubgroupsTable data={filteredData} />
+        </div>
 
         {/* Data Table */}
         <DataTable data={filteredData} />
