@@ -7,7 +7,7 @@ import { Header } from "@/components/Header";
 import { RevenueChart } from "@/components/charts/RevenueChart";
 import { ProfitBRLChart } from "@/components/charts/ProfitBRLChart";
 import { QuantityChart } from "@/components/charts/QuantityChart";
-import { TopSubgroupsTable } from "@/components/charts/TopSubgroupsTable";
+import { StoreDistributionChart } from "@/components/charts/StoreDistributionChart";
 import { DataTable } from "@/components/DataTable";
 import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp, DollarSign, Package, Percent, Filter, Download } from "lucide-react";
@@ -192,7 +192,7 @@ export default function Dashboard() {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard de Vendas</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Análise de Curva ABC - Nilo Atacadista</h1>
             <p className="text-muted-foreground">
               Análise completa dos dados de vendas com filtros interativos
             </p>
@@ -376,7 +376,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <QuantityChart data={filteredData} />
-          <TopSubgroupsTable data={filteredData} />
+          <StoreDistributionChart data={filteredData} />
         </div>
 
         {/* Data Table */}

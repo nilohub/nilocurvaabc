@@ -15,8 +15,8 @@ export function Header() {
               <TrendingUp className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Sales Analytics</h1>
-              <p className="text-sm text-muted-foreground">Dashboard de Vendas Interativo</p>
+              <h1 className="text-xl font-bold text-foreground">Análise de Curva ABC</h1>
+              <p className="text-sm text-muted-foreground">Nilo Atacadista</p>
             </div>
           </div>
           

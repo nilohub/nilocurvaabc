@@ -1,23 +1,27 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 
 // Register required Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 interface SalesData {
@@ -71,26 +75,34 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
       {
         label: 'Lucro (BRL)',
         data: orderedData.map(d => d.value),
-        backgroundColor: 'rgba(34, 197, 94, 0.7)',
         borderColor: 'rgba(34, 197, 94, 1)',
-        borderWidth: 1,
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: 'rgba(34, 197, 94, 1)',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
       }
     ]
   };
 
   const options = {
-    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
         labels: {
-          color: 'rgb(107, 114, 128)',
+          color: 'hsl(var(--muted-foreground))',
+          usePointStyle: true,
+          padding: 20,
         }
       },
       title: {
         display: true,
         text: 'Lucro por Mês',
-        color: 'rgb(17, 24, 39)',
+        color: 'hsl(var(--foreground))',
       },
       tooltip: {
         callbacks: {
@@ -104,21 +116,23 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
       y: {
         beginAtZero: true,
         ticks: {
-          color: 'rgb(107, 114, 128)',
+          color: 'hsl(var(--muted-foreground))',
           callback: function(value: any) {
             return `R$ ${value.toLocaleString('pt-BR')}`;
           }
         },
         grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
+          color: 'hsl(var(--border))',
+          drawBorder: false,
         }
       },
       x: {
         ticks: {
-          color: 'rgb(107, 114, 128)',
+          color: 'hsl(var(--muted-foreground))',
         },
         grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
+          color: 'hsl(var(--border))',
+          drawBorder: false,
         }
       }
     }
@@ -134,7 +148,7 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
       </CardHeader>
       <CardContent>
         <div style={{ position: 'relative', height: '400px' }}>
-          <Bar data={chartData} options={options} />
+          <Line data={chartData} options={options} />
         </div>
       </CardContent>
     </Card>

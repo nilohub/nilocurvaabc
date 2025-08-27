@@ -71,26 +71,30 @@ export function RevenueChart({ data }: RevenueChartProps) {
       {
         label: 'Faturamento (BRL)',
         data: orderedData.map(d => d.value),
-        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+        backgroundColor: 'rgba(99, 102, 241, 0.8)',
         borderColor: 'rgba(99, 102, 241, 1)',
-        borderWidth: 1,
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       }
     ]
   };
 
   const options = {
-    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
         labels: {
-          color: 'rgb(107, 114, 128)',
+          color: 'hsl(var(--muted-foreground))',
+          usePointStyle: true,
+          padding: 20,
         }
       },
       title: {
         display: true,
         text: 'Faturamento por Mês',
-        color: 'rgb(17, 24, 39)',
+        color: 'hsl(var(--foreground))',
       },
       tooltip: {
         callbacks: {
@@ -104,21 +108,23 @@ export function RevenueChart({ data }: RevenueChartProps) {
       y: {
         beginAtZero: true,
         ticks: {
-          color: 'rgb(107, 114, 128)',
+          color: 'hsl(var(--muted-foreground))',
           callback: function(value: any) {
             return `R$ ${value.toLocaleString('pt-BR')}`;
           }
         },
         grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
+          color: 'hsl(var(--border))',
+          drawBorder: false,
         }
       },
       x: {
         ticks: {
-          color: 'rgb(107, 114, 128)',
+          color: 'hsl(var(--muted-foreground))',
         },
         grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
+          color: 'hsl(var(--border))',
+          drawBorder: false,
         }
       }
     }
