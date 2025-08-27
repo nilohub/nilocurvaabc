@@ -355,9 +355,9 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">% Lucro Médio</p>
+                  <p className="text-sm font-medium text-muted-foreground">Lojas Ativas</p>
                   <p className="text-2xl font-bold text-foreground">
-                    {totals.avgProfitPercentage.toFixed(1)}%
+                    {availableFilters.stores.length}
                   </p>
                 </div>
                 <div className="p-3 bg-chart-4/10 rounded-full">

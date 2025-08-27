@@ -97,7 +97,10 @@ export function StoreDistributionChart({ data }: StoreDistributionChartProps) {
         labels: {
           color: 'hsl(var(--muted-foreground))',
           usePointStyle: true,
-          padding: 20,
+          padding: 16,
+          font: {
+            size: 11
+          },
           generateLabels: function(chart: any) {
             const data = chart.data;
             if (data.labels.length && data.datasets.length) {
@@ -119,6 +122,13 @@ export function StoreDistributionChart({ data }: StoreDistributionChartProps) {
         }
       },
       tooltip: {
+        backgroundColor: 'hsl(var(--popover))',
+        titleColor: 'hsl(var(--popover-foreground))',
+        bodyColor: 'hsl(var(--popover-foreground))',
+        borderColor: 'hsl(var(--border))',
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: 12,
         callbacks: {
           label: function(context: any) {
             const store = storePercentages[context.dataIndex];

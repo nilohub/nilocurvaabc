@@ -88,15 +88,20 @@ export function QuantityChart({ data }: QuantityChartProps) {
         labels: {
           color: 'hsl(var(--muted-foreground))',
           usePointStyle: true,
-          padding: 20,
+          padding: 16,
+          font: {
+            size: 12
+          }
         }
       },
-      title: {
-        display: true,
-        text: 'Vendas por Mês',
-        color: 'hsl(var(--foreground))',
-      },
       tooltip: {
+        backgroundColor: 'hsl(var(--popover))',
+        titleColor: 'hsl(var(--popover-foreground))',
+        bodyColor: 'hsl(var(--popover-foreground))',
+        borderColor: 'hsl(var(--border))',
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: 12,
         callbacks: {
           label: function(context: any) {
             return `${context.dataset.label}: ${context.parsed.y.toLocaleString('pt-BR')} unidades`;
@@ -109,22 +114,32 @@ export function QuantityChart({ data }: QuantityChartProps) {
         beginAtZero: true,
         ticks: {
           color: 'hsl(var(--muted-foreground))',
+          font: {
+            size: 11
+          },
           callback: function(value: any) {
             return `${value.toLocaleString('pt-BR')}`;
           }
         },
         grid: {
-          color: 'hsl(var(--border))',
-          drawBorder: false,
+          display: false
+        },
+        border: {
+          color: 'hsl(var(--border))'
         }
       },
       x: {
         ticks: {
           color: 'hsl(var(--muted-foreground))',
+          font: {
+            size: 11
+          }
         },
         grid: {
-          color: 'hsl(var(--border))',
-          drawBorder: false,
+          display: false
+        },
+        border: {
+          color: 'hsl(var(--border))'
         }
       }
     }

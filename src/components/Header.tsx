@@ -26,17 +26,17 @@ export function Header() {
               onClick={() => navigate("/")}
               className="flex items-center space-x-2"
             >
-              <Upload className="h-4 w-4" />
-              <span>Upload</span>
+              <BarChart3 className="h-4 w-4" />
+              <span>Dashboard</span>
             </Button>
             
             <Button
-              variant={location.pathname === "/dashboard" ? "default" : "ghost"}
-              onClick={() => navigate("/dashboard")}
+              variant={location.pathname === "/upload" ? "default" : "ghost"}
+              onClick={() => navigate("/upload")}
               className="flex items-center space-x-2"
             >
-              <BarChart3 className="h-4 w-4" />
-              <span>Dashboard</span>
+              <Upload className="h-4 w-4" />
+              <span>Upload</span>
             </Button>
           </nav>
         </div>
