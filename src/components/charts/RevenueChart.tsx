@@ -41,21 +41,36 @@ interface RevenueChartProps {
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
-  // Group data by subgroup and sum revenue
+  // Define months in correct order
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  // Group data by month and sum revenue
   const groupedData = data.reduce((acc, item) => {
-    if (!acc[item.subgroup]) {
-      acc[item.subgroup] = 0;
+    const monthIndex = parseInt(item.month) - 1;
+    const monthName = monthNames[monthIndex] || `Mês ${item.month}`;
+    
+    if (!acc[monthName]) {
+      acc[monthName] = 0;
     }
-    acc[item.subgroup] += item.value_brl || 0;
+    acc[monthName] += item.value_brl || 0;
     return acc;
   }, {} as Record<string, number>);
 
+  // Ensure all months are included in correct order
+  const orderedData = monthNames.map(month => ({
+    month,
+    value: groupedData[month] || 0
+  }));
+
   const chartData = {
-    labels: Object.keys(groupedData),
+    labels: orderedData.map(d => d.month),
     datasets: [
       {
         label: 'Faturamento (BRL)',
-        data: Object.values(groupedData),
+        data: orderedData.map(d => d.value),
         backgroundColor: 'rgba(99, 102, 241, 0.7)',
         borderColor: 'rgba(99, 102, 241, 1)',
         borderWidth: 1,
@@ -74,7 +89,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
       },
       title: {
         display: true,
-        text: 'Faturamento por Subgrupo',
+        text: 'Faturamento por Mês',
         color: 'rgb(17, 24, 39)',
       },
       tooltip: {
@@ -114,7 +129,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
       <CardHeader>
         <CardTitle>Faturamento em BRL</CardTitle>
         <CardDescription>
-          Faturamento total por subgrupo em Reais Brasileiros
+          Faturamento total por mês em Reais Brasileiros
         </CardDescription>
       </CardHeader>
       <CardContent>

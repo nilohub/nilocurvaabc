@@ -41,21 +41,36 @@ interface ProfitBRLChartProps {
 }
 
 export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
-  // Group data by subgroup and sum profit
+  // Define months in correct order
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  // Group data by month and sum profit
   const groupedData = data.reduce((acc, item) => {
-    if (!acc[item.subgroup]) {
-      acc[item.subgroup] = 0;
+    const monthIndex = parseInt(item.month) - 1;
+    const monthName = monthNames[monthIndex] || `Mês ${item.month}`;
+    
+    if (!acc[monthName]) {
+      acc[monthName] = 0;
     }
-    acc[item.subgroup] += item.profit_brl || 0;
+    acc[monthName] += item.profit_brl || 0;
     return acc;
   }, {} as Record<string, number>);
 
+  // Ensure all months are included in correct order
+  const orderedData = monthNames.map(month => ({
+    month,
+    value: groupedData[month] || 0
+  }));
+
   const chartData = {
-    labels: Object.keys(groupedData),
+    labels: orderedData.map(d => d.month),
     datasets: [
       {
         label: 'Lucro (BRL)',
-        data: Object.values(groupedData),
+        data: orderedData.map(d => d.value),
         backgroundColor: 'rgba(34, 197, 94, 0.7)',
         borderColor: 'rgba(34, 197, 94, 1)',
         borderWidth: 1,
@@ -74,7 +89,7 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
       },
       title: {
         display: true,
-        text: 'Lucro por Subgrupo',
+        text: 'Lucro por Mês',
         color: 'rgb(17, 24, 39)',
       },
       tooltip: {
@@ -114,7 +129,7 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
       <CardHeader>
         <CardTitle>Lucro em BRL</CardTitle>
         <CardDescription>
-          Lucro total por subgrupo em Reais Brasileiros
+          Lucro total por mês em Reais Brasileiros
         </CardDescription>
       </CardHeader>
       <CardContent>

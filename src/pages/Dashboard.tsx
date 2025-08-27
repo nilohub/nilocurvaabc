@@ -31,8 +31,9 @@ interface SalesData {
 interface Filters {
   store: string;
   month: string;
+  year: string;
+  session: string;
   subgroup: string;
-  group: string;
 }
 
 export default function Dashboard() {
@@ -41,15 +42,17 @@ export default function Dashboard() {
   const [filters, setFilters] = useState<Filters>({
     store: "",
     month: "",
-    subgroup: "",
-    group: ""
+    year: "",
+    session: "",
+    subgroup: ""
   });
   const [isLoading, setIsLoading] = useState(true);
   const [availableFilters, setAvailableFilters] = useState({
     stores: [] as string[],
     months: [] as string[],
-    subgroups: [] as string[],
-    groups: [] as string[]
+    years: [] as string[],
+    sessions: [] as string[],
+    subgroups: [] as string[]
   });
 
   // Load data from Supabase
@@ -76,10 +79,11 @@ export default function Dashboard() {
       // Extract unique values for filters
       const stores = [...new Set(salesData?.map(item => item.store) || [])];
       const months = [...new Set(salesData?.map(item => item.month) || [])];
+      const years = [...new Set(salesData?.map(item => new Date(item.created_at).getFullYear().toString()) || [])];
+      const sessions = [...new Set(salesData?.map(item => item.session) || [])];
       const subgroups = [...new Set(salesData?.map(item => item.subgroup) || [])];
-      const groups = [...new Set(salesData?.map(item => item.group) || [])];
 
-      setAvailableFilters({ stores, months, subgroups, groups });
+      setAvailableFilters({ stores, months, years, sessions, subgroups });
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -96,25 +100,28 @@ export default function Dashboard() {
     if (filters.month) {
       filtered = filtered.filter(item => item.month === filters.month);
     }
+    if (filters.year) {
+      filtered = filtered.filter(item => new Date(item.created_at).getFullYear().toString() === filters.year);
+    }
+    if (filters.session) {
+      filtered = filtered.filter(item => item.session === filters.session);
+    }
     if (filters.subgroup) {
       filtered = filtered.filter(item => item.subgroup === filters.subgroup);
-    }
-    if (filters.group) {
-      filtered = filtered.filter(item => item.group === filters.group);
     }
 
     setFilteredData(filtered);
   };
 
   const clearFilters = () => {
-    setFilters({ store: "", month: "", subgroup: "", group: "" });
+    setFilters({ store: "", month: "", year: "", session: "", subgroup: "" });
   };
 
   const exportData = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
-      "Mês,Sessão,Grupo,Subgrupo,Loja,Quantidade Vendida,Valor (BRL),Lucro (BRL),% Quantidade,% Valor,% Lucro\n" +
+      "Mês,Ano,Sessão,Subgrupo,Loja,Quantidade Vendida,Valor (BRL),Lucro (BRL),% Quantidade,% Valor,% Lucro\n" +
       filteredData.map(row => 
-        `${row.month},${row.session},${row.group},${row.subgroup},${row.store},${row.quantity_sold},${row.value_brl},${row.profit_brl},${row.quantity_percentage},${row.value_percentage},${row.profit_percentage}`
+        `${row.month},${new Date(row.created_at).getFullYear()},${row.session},${row.subgroup},${row.store},${row.quantity_sold},${row.value_brl},${row.profit_brl},${row.quantity_percentage},${row.value_percentage},${row.profit_percentage}`
       ).join("\n");
     
     const encodedUri = encodeURI(csvContent);
@@ -211,7 +218,7 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
               <div>
                 <Select value={filters.store} onValueChange={(value) => setFilters({...filters, store: value})}>
                   <SelectTrigger>
@@ -239,13 +246,26 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <Select value={filters.group} onValueChange={(value) => setFilters({...filters, group: value})}>
+                <Select value={filters.year} onValueChange={(value) => setFilters({...filters, year: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar Grupo" />
+                    <SelectValue placeholder="Selecionar Ano" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableFilters.groups.map((group) => (
-                      <SelectItem key={group} value={group}>{group}</SelectItem>
+                    {availableFilters.years.map((year) => (
+                      <SelectItem key={year} value={year}>{year}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Select value={filters.session} onValueChange={(value) => setFilters({...filters, session: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar Sessão" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableFilters.sessions.map((session) => (
+                      <SelectItem key={session} value={session}>{session}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -265,12 +285,13 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {(filters.store || filters.month || filters.subgroup || filters.group) && (
+            {(filters.store || filters.month || filters.year || filters.session || filters.subgroup) && (
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">Filtros ativos:</span>
                 {filters.store && <Badge variant="secondary">{filters.store}</Badge>}
                 {filters.month && <Badge variant="secondary">{months.find(m => m.value === filters.month)?.label}</Badge>}
-                {filters.group && <Badge variant="secondary">{filters.group}</Badge>}
+                {filters.year && <Badge variant="secondary">{filters.year}</Badge>}
+                {filters.session && <Badge variant="secondary">{filters.session}</Badge>}
                 {filters.subgroup && <Badge variant="secondary">{filters.subgroup}</Badge>}
                 <Button variant="ghost" size="sm" onClick={clearFilters}>
                   Limpar Filtros

@@ -41,21 +41,36 @@ interface QuantityChartProps {
 }
 
 export function QuantityChart({ data }: QuantityChartProps) {
-  // Group data by subgroup and sum quantities
+  // Define months in correct order
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  // Group data by month and sum quantities
   const groupedData = data.reduce((acc, item) => {
-    if (!acc[item.subgroup]) {
-      acc[item.subgroup] = 0;
+    const monthIndex = parseInt(item.month) - 1;
+    const monthName = monthNames[monthIndex] || `Mês ${item.month}`;
+    
+    if (!acc[monthName]) {
+      acc[monthName] = 0;
     }
-    acc[item.subgroup] += item.quantity_sold || 0;
+    acc[monthName] += item.quantity_sold || 0;
     return acc;
   }, {} as Record<string, number>);
 
+  // Ensure all months are included in correct order
+  const orderedData = monthNames.map(month => ({
+    month,
+    value: groupedData[month] || 0
+  }));
+
   const chartData = {
-    labels: Object.keys(groupedData),
+    labels: orderedData.map(d => d.month),
     datasets: [
       {
         label: 'Quantidade Vendida',
-        data: Object.values(groupedData),
+        data: orderedData.map(d => d.value),
         backgroundColor: 'rgba(168, 85, 247, 0.7)',
         borderColor: 'rgba(168, 85, 247, 1)',
         borderWidth: 1,
@@ -74,7 +89,7 @@ export function QuantityChart({ data }: QuantityChartProps) {
       },
       title: {
         display: true,
-        text: 'Vendas por Quantidade',
+        text: 'Vendas por Mês',
         color: 'rgb(17, 24, 39)',
       },
       tooltip: {
@@ -114,7 +129,7 @@ export function QuantityChart({ data }: QuantityChartProps) {
       <CardHeader>
         <CardTitle>Vendas em Quantidade</CardTitle>
         <CardDescription>
-          Quantidade total vendida por subgrupo
+          Quantidade total vendida por mês
         </CardDescription>
       </CardHeader>
       <CardContent>
