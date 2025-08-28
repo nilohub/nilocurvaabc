@@ -10,7 +10,8 @@ import { QuantityChart } from "@/components/charts/QuantityChart";
 import { StoreDistributionChart } from "@/components/charts/StoreDistributionChart";
 import { DataTable } from "@/components/DataTable";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, DollarSign, Package, Percent, Filter, Download } from "lucide-react";
+import { TrendingUp, DollarSign, Package, Store, Users, Calculator, Tags, Grid, Filter, Download } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SalesData {
   id: string;
@@ -37,6 +38,7 @@ interface Filters {
 }
 
 export default function Dashboard() {
+  const { } = useAuth();
   const [data, setData] = useState<SalesData[]>([]);
   const [filteredData, setFilteredData] = useState<SalesData[]>([]);
   const [filters, setFilters] = useState<Filters>({
@@ -152,6 +154,12 @@ export default function Dashboard() {
     totals.avgValuePercentage /= dataCount;
     totals.avgProfitPercentage /= dataCount;
   }
+
+  // Calculate additional metrics
+  const totalBuyers = 13; // Total de compradores (incluindo supervisores)
+  const profitMarginPercentage = totals.value > 0 ? (totals.profit / totals.value) * 100 : 0;
+  const totalSessions = availableFilters.sessions.length;
+  const totalSubgroups = availableFilters.subgroups.length;
 
   const months = [
     { value: "01", label: "Janeiro" },
@@ -349,7 +357,74 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="p-3 bg-chart-4/10 rounded-full">
-                  <Percent className="h-6 w-6 text-chart-4" />
+                  <Store className="h-6 w-6 text-chart-4" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="shadow-card border-0 bg-gradient-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Compradores</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {totalBuyers}
+                  </p>
+                </div>
+                <div className="p-3 bg-chart-5/10 rounded-full">
+                  <Users className="h-6 w-6 text-chart-5" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-card border-0 bg-gradient-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">% Lucro/Faturamento</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {profitMarginPercentage.toFixed(1)}%
+                  </p>
+                </div>
+                <div className="p-3 bg-chart-1/10 rounded-full">
+                  <Calculator className="h-6 w-6 text-chart-1" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-card border-0 bg-gradient-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total de Sessões</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {totalSessions}
+                  </p>
+                </div>
+                <div className="p-3 bg-chart-2/10 rounded-full">
+                  <Tags className="h-6 w-6 text-chart-2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-card border-0 bg-gradient-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total de Subgrupos</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {totalSubgroups}
+                  </p>
+                </div>
+                <div className="p-3 bg-chart-3/10 rounded-full">
+                  <Grid className="h-6 w-6 text-chart-3" />
                 </div>
               </div>
             </CardContent>
