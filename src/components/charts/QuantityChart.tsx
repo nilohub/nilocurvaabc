@@ -71,8 +71,8 @@ export function QuantityChart({ data }: QuantityChartProps) {
       {
         label: 'Quantidade Vendida',
         data: orderedData.map(d => d.value),
-        backgroundColor: 'rgba(168, 85, 247, 0.8)',
-        borderColor: 'rgba(168, 85, 247, 1)',
+        backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgba(34, 197, 94, 1)',
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,

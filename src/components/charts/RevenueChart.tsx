@@ -71,8 +71,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
       {
         label: 'Faturamento (BRL)',
         data: orderedData.map(d => d.value),
-        backgroundColor: 'rgba(99, 102, 241, 0.8)',
-        borderColor: 'rgba(99, 102, 241, 1)',
+        backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgba(34, 197, 94, 1)',
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,

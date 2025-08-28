@@ -189,23 +189,6 @@ export default function Dashboard() {
       <Header />
       
       <div className="container mx-auto px-6 py-8 space-y-8">
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Análise de Curva ABC - Nilo Atacadista</h1>
-            <p className="text-muted-foreground">
-              Análise completa dos dados de vendas com filtros interativos
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={exportData} className="flex items-center gap-2">
-              <Download className="h-4 w-4" />
-              Exportar CSV
-            </Button>
-          </div>
-        </div>
-
         {/* Filters */}
         <Card className="shadow-card border-0">
           <CardHeader>
@@ -224,7 +207,7 @@ export default function Dashboard() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar Loja" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-popover border border-border z-50">
                     {availableFilters.stores.map((store) => (
                       <SelectItem key={store} value={store}>{store}</SelectItem>
                     ))}
@@ -237,7 +220,7 @@ export default function Dashboard() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar Mês" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-popover border border-border z-50">
                     {months.filter(m => availableFilters.months.includes(m.value)).map((month) => (
                       <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
                     ))}
@@ -250,7 +233,7 @@ export default function Dashboard() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar Ano" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-popover border border-border z-50">
                     {availableFilters.years.map((year) => (
                       <SelectItem key={year} value={year}>{year}</SelectItem>
                     ))}
@@ -263,7 +246,7 @@ export default function Dashboard() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar Sessão" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-popover border border-border z-50">
                     {availableFilters.sessions.map((session) => (
                       <SelectItem key={session} value={session}>{session}</SelectItem>
                     ))}
@@ -276,10 +259,15 @@ export default function Dashboard() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar Subgrupo" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {availableFilters.subgroups.map((subgroup) => (
-                      <SelectItem key={subgroup} value={subgroup}>{subgroup}</SelectItem>
-                    ))}
+                  <SelectContent className="bg-popover border border-border z-50">
+                    {availableFilters.subgroups
+                      .filter(subgroup => {
+                        if (!filters.session) return true;
+                        return data.some(item => item.session === filters.session && item.subgroup === subgroup);
+                      })
+                      .map((subgroup) => (
+                        <SelectItem key={subgroup} value={subgroup}>{subgroup}</SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
