@@ -30,6 +30,7 @@ const users: User[] = [
   { id: '10', name: 'EULINO', code: '646', role: 'buyer' },
   { id: '11', name: 'MARCELO H.', code: '4725', role: 'buyer' },
   { id: '12', name: 'JOSE BARBOSA', code: '4722', role: 'buyer' },
+  { id: '13', name: 'ADRIAN H.', code: '3782', role: 'buyer' },
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

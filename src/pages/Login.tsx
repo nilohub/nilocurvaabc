@@ -67,11 +67,7 @@ export default function Login() {
           <CardHeader className="text-center space-y-2">
             <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
               <ShoppingCart className="h-6 w-6" />
-              Acesso ao Sistema
             </CardTitle>
-            <CardDescription className="text-base">
-              Digite seu código de acesso para entrar no sistema
-            </CardDescription>
           </CardHeader>
           
           <CardContent>
@@ -102,9 +98,8 @@ export default function Login() {
             </form>
 
             <div className="mt-6 pt-6 border-t">
-              <p className="text-xs text-muted-foreground text-center">
-                Sistema de Análise ABC para Varejo<br />
-                Entre em contato com o supervisor para obter seu código de acesso
+              <p className="text-sm text-muted-foreground text-center font-medium">
+                "No quieto, no quieto, o Nilo vende mais barato."
               </p>
             </div>
           </CardContent>
