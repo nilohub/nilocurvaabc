@@ -7,7 +7,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import TravelConnectSignIn from "./components/ui/travel-connect-signin";
 
@@ -21,8 +20,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/login-travel" element={<TravelConnectSignIn />} />
+            <Route path="/login" element={<TravelConnectSignIn />} />
             <Route 
               path="/" 
               element={
