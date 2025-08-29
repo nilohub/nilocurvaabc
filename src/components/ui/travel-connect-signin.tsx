@@ -115,7 +115,7 @@ const DotMap = () => {
       dots.forEach(dot => {
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(124, 58, 237, ${dot.opacity})`;
+        ctx.fillStyle = `rgba(59, 130, 246, ${dot.opacity})`;
         ctx.fill();
       });
     }
@@ -138,33 +138,33 @@ const DotMap = () => {
         ctx.beginPath();
         ctx.moveTo(route.start.x, route.start.y);
         ctx.lineTo(x, y);
-        ctx.strokeStyle = "#7c3aed";
+        ctx.strokeStyle = "#3b82f6";
         ctx.lineWidth = 1.5;
         ctx.stroke();
         
         // Draw the start point
         ctx.beginPath();
         ctx.arc(route.start.x, route.start.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "#7c3aed";
+        ctx.fillStyle = "#3b82f6";
         ctx.fill();
         
         // Draw the moving point
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "#8b5cf6";
+        ctx.fillStyle = "#60a5fa";
         ctx.fill();
         
         // Add glow effect to the moving point
         ctx.beginPath();
         ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(139, 92, 246, 0.4)";
+        ctx.fillStyle = "rgba(96, 165, 250, 0.4)";
         ctx.fill();
         
         // If the route is complete, draw the end point
         if (progress === 1) {
           ctx.beginPath();
           ctx.arc(route.end.x, route.end.y, 3, 0, Math.PI * 2);
-          ctx.fillStyle = "#7c3aed";
+          ctx.fillStyle = "#3b82f6";
           ctx.fill();
         }
       });
@@ -239,16 +239,16 @@ const TravelConnectSignIn = () => {
   };
   
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-muted p-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-blue-100/50 to-blue-200/30 p-2 sm:p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl overflow-hidden rounded-2xl flex bg-card shadow-xl border"
+        className="w-full max-w-5xl overflow-hidden rounded-xl sm:rounded-2xl flex flex-col md:flex-row bg-white shadow-2xl border border-blue-200/20"
       >
         {/* Left side - Map */}
-        <div className="hidden md:block w-1/2 h-[600px] relative overflow-hidden border-r">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/20 to-muted/30">
+        <div className="hidden md:block w-1/2 h-[500px] md:h-[600px] relative overflow-hidden border-r border-blue-200/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-blue-100/50 to-blue-200/30">
             <DotMap />
             
             {/* Logo and text overlay */}
@@ -259,15 +259,15 @@ const TravelConnectSignIn = () => {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="mb-6"
               >
-                <div className="h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
-                  <TrendingUp className="text-primary-foreground h-6 w-6" />
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
+                  <TrendingUp className="text-white h-6 w-6" />
                 </div>
               </motion.div>
               <motion.h2 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.5 }}
-                className="text-3xl font-bold mb-2 text-center text-foreground"
+                className="text-2xl md:text-3xl font-bold mb-2 text-center text-blue-800"
               >
                 Nilo Atacadista
               </motion.h2>
@@ -275,7 +275,7 @@ const TravelConnectSignIn = () => {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
-                className="text-sm text-center text-muted-foreground max-w-xs"
+                className="text-sm text-center text-blue-600/80 max-w-xs"
               >
                 Sistema de Análise de Curva ABC para controle e gestão de vendas
               </motion.p>
@@ -284,18 +284,18 @@ const TravelConnectSignIn = () => {
         </div>
         
         {/* Right side - Sign In Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-card">
+        <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-10 flex flex-col justify-center bg-white min-h-[500px] md:min-h-[600px]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-2xl md:text-3xl font-bold mb-1 text-foreground">Bem-vindo</h1>
-            <p className="text-muted-foreground mb-8">Entre com seu código de acesso</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 text-gray-800">Bem-vindo</h1>
+            <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">Entre com seu código de acesso</p>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               <div>
-                <Label htmlFor="code" className="text-sm font-medium">
+                <Label htmlFor="code" className="text-sm font-medium text-gray-700">
                   Código de Acesso
                 </Label>
                 <Input
@@ -304,7 +304,7 @@ const TravelConnectSignIn = () => {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Digite seu código"
-                  className="h-12 text-lg text-center font-mono tracking-wider mt-2"
+                  className="h-10 sm:h-12 text-base sm:text-lg text-center font-mono tracking-wider mt-2 border-blue-200 focus:border-blue-400 focus:ring-blue-400 bg-blue-50/30"
                   disabled={isLoading}
                   autoFocus
                 />
@@ -319,7 +319,7 @@ const TravelConnectSignIn = () => {
               >
                 <Button
                   type="submit"
-                  className="w-full h-12 text-lg font-semibold relative overflow-hidden"
+                  className="w-full h-10 sm:h-12 text-base sm:text-lg font-semibold relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
                   disabled={isLoading}
                 >
                   <span className="flex items-center justify-center">
@@ -339,8 +339,8 @@ const TravelConnectSignIn = () => {
               </motion.div>
             </form>
 
-            <div className="mt-6 pt-6 border-t">
-              <p className="text-sm text-muted-foreground text-center font-medium">
+            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-blue-200/30">
+              <p className="text-xs sm:text-sm text-gray-500 text-center font-medium">
                 "No quieto, no quieto, o Nilo vende mais barato."
               </p>
             </div>

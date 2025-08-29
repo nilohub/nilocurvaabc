@@ -180,11 +180,11 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-dashboard-bg">
         <Header />
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Carregando dados...</p>
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground text-sm sm:text-base">Carregando dados...</p>
             </div>
           </div>
         </div>
@@ -196,20 +196,20 @@ export default function Dashboard() {
     <div className="min-h-screen bg-dashboard-bg">
       <Header />
       
-      <div className="container mx-auto px-6 py-8 space-y-8">
+      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-8">
         {/* Filters */}
         <Card className="shadow-card border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
               Filtros
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Use os filtros abaixo para refinar a análise dos dados
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-4">
               <div>
                 <Select value={filters.store} onValueChange={(value) => setFilters({...filters, store: value})}>
                   <SelectTrigger>
@@ -298,66 +298,66 @@ export default function Dashboard() {
         </Card>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Quantidade Total</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Quantidade Total</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     {totals.quantity.toLocaleString('pt-BR')}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-1/10 rounded-full">
-                  <Package className="h-6 w-6 text-chart-1" />
+                <div className="p-2 sm:p-3 bg-chart-1/10 rounded-full">
+                  <Package className="h-4 w-4 sm:h-6 sm:w-6 text-chart-1" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Valor Total (BRL)</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Valor Total (BRL)</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     R$ {totals.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-2/10 rounded-full">
-                  <DollarSign className="h-6 w-6 text-chart-2" />
+                <div className="p-2 sm:p-3 bg-chart-2/10 rounded-full">
+                  <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 text-chart-2" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Lucro Total (BRL)</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Lucro Total (BRL)</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     R$ {totals.profit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-3/10 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-chart-3" />
+                <div className="p-2 sm:p-3 bg-chart-3/10 rounded-full">
+                  <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-chart-3" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Lojas Ativas</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Lojas Ativas</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     {availableFilters.stores.length}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-4/10 rounded-full">
-                  <Store className="h-6 w-6 text-chart-4" />
+                <div className="p-2 sm:p-3 bg-chart-4/10 rounded-full">
+                  <Store className="h-4 w-4 sm:h-6 sm:w-6 text-chart-4" />
                 </div>
               </div>
             </CardContent>
@@ -365,66 +365,66 @@ export default function Dashboard() {
         </div>
 
         {/* Additional KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Compradores</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Compradores</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     {totalBuyers}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-5/10 rounded-full">
-                  <Users className="h-6 w-6 text-chart-5" />
+                <div className="p-2 sm:p-3 bg-chart-5/10 rounded-full">
+                  <Users className="h-4 w-4 sm:h-6 sm:w-6 text-chart-5" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">% Lucro/Faturamento</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">% Lucro/Faturamento</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     {profitMarginPercentage.toFixed(1)}%
                   </p>
                 </div>
-                <div className="p-3 bg-chart-1/10 rounded-full">
-                  <Calculator className="h-6 w-6 text-chart-1" />
+                <div className="p-2 sm:p-3 bg-chart-1/10 rounded-full">
+                  <Calculator className="h-4 w-4 sm:h-6 sm:w-6 text-chart-1" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Sessões</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total de Sessões</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     {totalSessions}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-2/10 rounded-full">
-                  <Tags className="h-6 w-6 text-chart-2" />
+                <div className="p-2 sm:p-3 bg-chart-2/10 rounded-full">
+                  <Tags className="h-4 w-4 sm:h-6 sm:w-6 text-chart-2" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-card border-0 bg-gradient-card">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total de Subgrupos</p>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total de Subgrupos</p>
+                  <p className="text-lg sm:text-2xl font-bold text-foreground">
                     {totalSubgroups}
                   </p>
                 </div>
-                <div className="p-3 bg-chart-3/10 rounded-full">
-                  <Grid className="h-6 w-6 text-chart-3" />
+                <div className="p-2 sm:p-3 bg-chart-3/10 rounded-full">
+                  <Grid className="h-4 w-4 sm:h-6 sm:w-6 text-chart-3" />
                 </div>
               </div>
             </CardContent>
@@ -432,12 +432,12 @@ export default function Dashboard() {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           <ProfitBRLChart data={filteredData} />
           <RevenueChart data={filteredData} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           <QuantityChart data={filteredData} />
           <StoreDistributionChart data={filteredData} />
         </div>
