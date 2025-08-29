@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import TravelConnectSignIn from "./components/ui/travel-connect-signin";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/login-travel" element={<TravelConnectSignIn />} />
             <Route 
               path="/" 
               element={
