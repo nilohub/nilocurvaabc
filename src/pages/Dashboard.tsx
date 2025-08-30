@@ -4,10 +4,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
-import { RevenueChart } from "@/components/charts/RevenueChart";
-import { ProfitBRLChart } from "@/components/charts/ProfitBRLChart";
+import { RevenueAndProfitChart } from "@/components/charts/RevenueAndProfitChart";
 import { QuantityChart } from "@/components/charts/QuantityChart";
 import { StoreDistributionChart } from "@/components/charts/StoreDistributionChart";
+import { TopSubgroupsTable } from "@/components/charts/TopSubgroupsTable";
 import { DataTable } from "@/components/DataTable";
 import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp, DollarSign, Package, Store, Users, Calculator, Tags, Grid, Filter, Download } from "lucide-react";
@@ -433,8 +433,8 @@ export default function Dashboard() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-          <ProfitBRLChart data={filteredData} />
-          <RevenueChart data={filteredData} />
+          <RevenueAndProfitChart data={filteredData} />
+          <TopSubgroupsTable data={filteredData} />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
