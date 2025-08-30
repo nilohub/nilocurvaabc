@@ -18,9 +18,13 @@ interface ExcelData {
   profitPercentage: number;
 }
 
+interface FileUpload {
+  file: File;
+  month: string;
+}
+
 export function UploadForm() {
-  const [file, setFile] = useState<File | null>(null);
-  const [month, setMonth] = useState("");
+  const [files, setFiles] = useState<FileUpload[]>([]);
   const [year, setYear] = useState("");
   const [store, setStore] = useState("");
   const [subgroup, setSubgroup] = useState("");
@@ -57,18 +61,34 @@ export function UploadForm() {
   ];
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      if (!selectedFile.name.match(/\.(xlsx|xls)$/i)) {
+    const selectedFiles = Array.from(event.target.files || []);
+    
+    const validFiles: FileUpload[] = [];
+    for (const file of selectedFiles) {
+      if (!file.name.match(/\.(xlsx|xls)$/i)) {
         toast({
           title: "Arquivo inválido",
-          description: "Por favor, selecione um arquivo Excel (.xlsx ou .xls)",
+          description: `${file.name} não é um arquivo Excel válido (.xlsx ou .xls)`,
           variant: "destructive"
         });
-        return;
+        continue;
       }
-      setFile(selectedFile);
+      validFiles.push({ file, month: "" });
     }
+    
+    if (validFiles.length > 0) {
+      setFiles(validFiles);
+    }
+  };
+
+  const handleMonthChange = (index: number, month: string) => {
+    setFiles(prev => prev.map((item, i) => 
+      i === index ? { ...item, month } : item
+    ));
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const processExcelFile = async (file: File): Promise<ExcelData> => {
@@ -124,10 +144,33 @@ export function UploadForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!file || !month || !year || !store || !subgroup || !session) {
+    if (files.length === 0 || !year || !store || !subgroup || !session) {
       toast({
         title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos e selecione um arquivo",
+        description: "Por favor, preencha todos os campos e selecione pelo menos um arquivo",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate that all files have months assigned
+    const filesWithoutMonth = files.filter(f => !f.month);
+    if (filesWithoutMonth.length > 0) {
+      toast({
+        title: "Mês obrigatório",
+        description: "Por favor, selecione o mês para todos os arquivos",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check for duplicate months
+    const months = files.map(f => f.month);
+    const duplicateMonths = months.filter((month, index) => months.indexOf(month) !== index);
+    if (duplicateMonths.length > 0) {
+      toast({
+        title: "Meses duplicados",
+        description: "Cada arquivo deve ter um mês único",
         variant: "destructive"
       });
       return;
@@ -136,16 +179,15 @@ export function UploadForm() {
     setIsProcessing(true);
 
     try {
-      // Process Excel file
-      const excelData = await processExcelFile(file);
+      const allData = [];
       
-      // Insert into Supabase
-      const { error } = await supabase
-        .from('sales_data')
-        .insert({
-          month,
+      // Process each file
+      for (const fileUpload of files) {
+        const excelData = await processExcelFile(fileUpload.file);
+        allData.push({
+          month: fileUpload.month,
           session,
-          group: subgroup, // Using subgroup as group since we removed the group field
+          group: subgroup,
           subgroup,
           store,
           quantity_sold: excelData.quantitySold,
@@ -155,6 +197,12 @@ export function UploadForm() {
           value_percentage: excelData.valuePercentage,
           profit_percentage: excelData.profitPercentage
         });
+      }
+      
+      // Insert all data into Supabase
+      const { error } = await supabase
+        .from('sales_data')
+        .insert(allData);
 
       if (error) {
         throw error;
@@ -162,13 +210,12 @@ export function UploadForm() {
 
       toast({
         title: "Upload realizado com sucesso!",
-        description: "Os dados foram processados e salvos no banco de dados.",
+        description: `${files.length} arquivo(s) processado(s) e salvos no banco de dados.`,
         variant: "default"
       });
 
       // Reset form
-      setFile(null);
-      setMonth("");
+      setFiles([]);
       setYear("");
       setStore("");
       setSubgroup("");
@@ -180,7 +227,7 @@ export function UploadForm() {
       console.error('Error processing upload:', error);
       toast({
         title: "Erro no upload",
-        description: "Ocorreu um erro ao processar o arquivo. Verifique se o formato está correto.",
+        description: "Ocorreu um erro ao processar os arquivos. Verifique se o formato está correto.",
         variant: "destructive"
       });
     } finally {
@@ -206,43 +253,56 @@ export function UploadForm() {
             {/* File Upload */}
             <div className="space-y-2">
               <Label htmlFor="file-upload" className="text-sm font-medium">
-                Arquivo Excel (.xlsx ou .xls)
+                Arquivos Excel (.xlsx ou .xls) - Múltiplos meses
               </Label>
               <div className="relative">
                 <Input
                   id="file-upload"
                   type="file"
                   accept=".xlsx,.xls"
+                  multiple
                   onChange={handleFileChange}
                   className="cursor-pointer"
                 />
-                {file && (
-                  <div className="mt-2 flex items-center text-sm text-success">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    {file.name}
-                  </div>
-                )}
               </div>
+              
+              {/* Display selected files with month selectors */}
+              {files.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  <Label className="text-sm font-medium">Arquivos selecionados:</Label>
+                  {files.map((fileUpload, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
+                      <span className="text-sm flex-1 truncate">{fileUpload.file.name}</span>
+                      <Select value={fileUpload.month} onValueChange={(value) => handleMonthChange(index, value)}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Mês" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((m) => (
+                            <SelectItem key={m.value} value={m.value}>
+                              {m.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        Remover
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Metadata Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="month">Mês</Label>
-                <Select value={month} onValueChange={setMonth}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o mês" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {m.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="year">Ano</Label>
                 <Select value={year} onValueChange={setYear}>
@@ -299,17 +359,17 @@ export function UploadForm() {
             <Button
               type="submit"
               className="w-full bg-gradient-primary hover:opacity-90 text-primary-foreground font-medium py-3"
-              disabled={isProcessing}
+              disabled={isProcessing || files.length === 0}
             >
               {isProcessing ? (
                 <>
                   <AlertCircle className="h-4 w-4 mr-2 animate-spin" />
-                  Processando...
+                  Processando {files.length} arquivo(s)...
                 </>
               ) : (
                 <>
                   <Upload className="h-4 w-4 mr-2" />
-                  Fazer Upload e Processar
+                  Fazer Upload de {files.length > 0 ? files.length : ''} Arquivo(s)
                 </>
               )}
             </Button>
