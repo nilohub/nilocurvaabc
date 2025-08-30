@@ -111,17 +111,22 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fadeIn 0.5s ease-out',
 				'slide-up': 'slideUp 0.3s ease-out',
+				'scale-in': 'scaleIn 0.3s ease-out',
 				'pulse-glow': 'pulseGlow 2s infinite'
 			},
 			boxShadow: {
 				'card': 'var(--shadow-card)',
 				'lg': 'var(--shadow-lg)',
-				'glow': 'var(--shadow-glow)'
+				'glow': 'var(--shadow-glow)',
+				'kpi': 'var(--shadow-kpi)'
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-card': 'var(--gradient-card)',
-				'gradient-success': 'var(--gradient-success)'
+				'gradient-success': 'var(--gradient-success)',
+				'gradient-warning': 'var(--gradient-warning)',
+				'gradient-purple': 'var(--gradient-purple)',
+				'gradient-cyan': 'var(--gradient-cyan)'
 			}
 		}
 	},
