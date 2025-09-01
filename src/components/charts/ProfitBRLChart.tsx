@@ -51,30 +51,23 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
   ];
 
-  // Group data by month and sum profit and revenue
+  // Group data by month and sum profit
   const groupedData = data.reduce((acc, item) => {
     const monthIndex = parseInt(item.month) - 1;
     const monthName = monthNames[monthIndex] || `Mês ${item.month}`;
     
     if (!acc[monthName]) {
-      acc[monthName] = { profit: 0, revenue: 0 };
+      acc[monthName] = 0;
     }
-    acc[monthName].profit += item.profit_brl || 0;
-    acc[monthName].revenue += item.value_brl || 0;
+    acc[monthName] += item.profit_brl || 0;
     return acc;
-  }, {} as Record<string, { profit: number; revenue: number }>);
+  }, {} as Record<string, number>);
 
-  // Ensure all months are included in correct order and calculate percentage
-  const orderedData = monthNames.map(month => {
-    const monthData = groupedData[month] || { profit: 0, revenue: 0 };
-    const percentage = monthData.revenue > 0 ? (monthData.profit / monthData.revenue) * 100 : 0;
-    
-    return {
-      month,
-      value: monthData.profit,
-      percentage: percentage
-    };
-  });
+  // Ensure all months are included in correct order
+  const orderedData = monthNames.map(month => ({
+    month,
+    value: groupedData[month] || 0
+  }));
 
   const chartData = {
     labels: orderedData.map(d => d.month),
@@ -119,12 +112,7 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
         padding: 12,
         callbacks: {
           label: function(context: any) {
-            const dataIndex = context.dataIndex;
-            const percentage = orderedData[dataIndex]?.percentage || 0;
-            return [
-              `${context.dataset.label}: R$ ${context.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-              `% Lucro/Faturamento: ${percentage.toFixed(1)}%`
-            ];
+            return `${context.dataset.label}: R$ ${context.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
           }
         }
       }
