@@ -9,6 +9,7 @@ import { ProfitBRLChart } from "@/components/charts/ProfitBRLChart";
 import { QuantityChart } from "@/components/charts/QuantityChart";
 import { StoreDistributionChart } from "@/components/charts/StoreDistributionChart";
 import { DataTable } from "@/components/DataTable";
+import { GroupPerformanceChart } from "@/components/charts/GroupPerformanceChart";
 import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp, DollarSign, Package, Store, Users, Calculator, Tags, Grid, Filter, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -441,6 +442,9 @@ export default function Dashboard() {
           <QuantityChart data={filteredData} />
           <StoreDistributionChart data={filteredData} />
         </div>
+
+        {/* Group Performance Chart */}
+        <GroupPerformanceChart data={filteredData} />
 
         {/* Data Table */}
         <DataTable data={filteredData} />
