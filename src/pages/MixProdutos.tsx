@@ -24,6 +24,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
 interface Product {
@@ -46,6 +47,29 @@ declare module 'jspdf' {
   interface jsPDF {
     autoTable: (options: any) => jsPDF;
   }
+}
+
+// Droppable Zone Component
+function DroppableZone({ className, children }: { 
+  className: keyof ProductClass; 
+  children: React.ReactNode; 
+}) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `droppable-${className}`,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`min-h-[400px] max-h-[500px] overflow-y-auto space-y-3 p-4 border-2 border-dashed rounded-lg transition-all duration-200 ${
+        isOver 
+          ? 'border-primary bg-primary/10 border-solid' 
+          : 'border-border/30 bg-background/50'
+      }`}
+    >
+      {children}
+    </div>
+  );
 }
 
 // Draggable Product Item Component
@@ -385,12 +409,9 @@ export default function MixProdutos() {
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent 
-          id={`droppable-${className}`}
-          className="p-4 space-y-4 bg-gradient-to-b from-card to-card/50"
-        >
+        <CardContent className="p-4 space-y-4 bg-gradient-to-b from-card to-card/50">
           {/* Drop Zone */}
-          <div className="min-h-[400px] max-h-[500px] overflow-y-auto space-y-3 p-2 border-2 border-dashed border-border/30 rounded-lg bg-background/50">
+          <DroppableZone className={className}>
             <SortableContext items={allProductIds} strategy={verticalListSortingStrategy}>
               {products[className].length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
@@ -408,7 +429,7 @@ export default function MixProdutos() {
                 ))
               )}
             </SortableContext>
-          </div>
+          </DroppableZone>
 
           {/* Add Product Input */}
           <div className="flex gap-2 pt-3 border-t border-border/50">
