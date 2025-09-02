@@ -4,11 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Header } from "@/components/Header";
-import { Plus, Trash2, Save, Download } from "lucide-react";
+import { Plus, Trash2, Save, Download, GripVertical, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import {
+  DndContext,
+  DragOverlay,
+  DragStartEvent,
+  DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Product {
   id: string;
@@ -32,6 +48,60 @@ declare module 'jspdf' {
   }
 }
 
+// Draggable Product Item Component
+function DraggableProduct({ product, className, onRemove }: { 
+  product: Product; 
+  className: keyof ProductClass; 
+  onRemove: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: `${className}-${product.id}`,
+    data: { product, sourceClass: className }
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center justify-between p-3 border-2 rounded-lg bg-card shadow-sm hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing ${
+        isDragging ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50'
+      }`}
+      {...attributes}
+      {...listeners}
+    >
+      <div className="flex items-center gap-3 flex-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+        <Package className="h-4 w-4 text-primary" />
+        <span className="text-sm font-medium text-foreground">{product.description}</span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+      >
+        <Trash2 className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+}
+
 export default function MixProdutos() {
   const { toast } = useToast();
   const [products, setProducts] = useState<ProductClass>({
@@ -46,6 +116,16 @@ export default function MixProdutos() {
     B: "",
     C: ""
   });
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor)
+  );
 
   useEffect(() => {
     loadSubgroups();
@@ -97,6 +177,47 @@ export default function MixProdutos() {
       ...prev,
       [className]: prev[className].filter(p => p.id !== productId)
     }));
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over) return;
+
+    const activeData = active.data.current;
+    const overId = over.id as string;
+    
+    // Determine target class from overId or from over data
+    let targetClass: keyof ProductClass;
+    if (overId.includes('droppable-')) {
+      targetClass = overId.replace('droppable-', '') as keyof ProductClass;
+    } else if (overId.includes('-')) {
+      targetClass = overId.split('-')[0] as keyof ProductClass;
+    } else {
+      return;
+    }
+
+    const sourceClass = activeData?.sourceClass as keyof ProductClass;
+    const product = activeData?.product as Product;
+
+    if (!sourceClass || !product || sourceClass === targetClass) return;
+
+    // Move product from source to target class
+    setProducts(prev => ({
+      ...prev,
+      [sourceClass]: prev[sourceClass].filter(p => p.id !== product.id),
+      [targetClass]: [...prev[targetClass], product]
+    }));
+
+    toast({
+      title: "Produto movido",
+      description: `Produto "${product.description}" movido para Classe ${targetClass}`,
+    });
   };
 
   const handleInputChange = (className: keyof ProductClass, value: string) => {
@@ -232,49 +353,84 @@ export default function MixProdutos() {
     });
   };
 
-  const renderProductColumn = (className: keyof ProductClass, title: string, bgColor: string) => (
-    <Card className="h-full">
-      <CardHeader className={`${bgColor} text-white`}>
-        <CardTitle className="text-center text-lg font-bold">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 space-y-3">
-        {/* Product List */}
-        <div className="space-y-2 min-h-[300px] max-h-[400px] overflow-y-auto">
-          {products[className].map((product) => (
-            <div key={product.id} className="flex items-center justify-between p-2 border rounded-md bg-muted/50">
-              <span className="text-sm flex-1">{product.description}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => removeProduct(className, product.id)}
-                className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
-          ))}
-        </div>
+  const getClassColor = (className: keyof ProductClass) => {
+    const colors = {
+      A: 'from-emerald-600 to-emerald-700',
+      B: 'from-blue-600 to-blue-700', 
+      C: 'from-orange-600 to-orange-700'
+    };
+    return colors[className];
+  };
 
-        {/* Add Product Input */}
-        <div className="flex gap-2 pt-2 border-t">
-          <Input
-            placeholder="Descrição do produto"
-            value={newProductInputs[className]}
-            onChange={(e) => handleInputChange(className, e.target.value)}
-            onKeyPress={(e) => handleKeyPress(e, className)}
-            className="flex-1"
-          />
-          <Button
-            onClick={() => addProduct(className)}
-            size="sm"
-            className="shrink-0"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const getClassBadgeColor = (className: keyof ProductClass) => {
+    const colors = {
+      A: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      B: 'bg-blue-100 text-blue-800 border-blue-200',
+      C: 'bg-orange-100 text-orange-800 border-orange-200'
+    };
+    return colors[className];
+  };
+
+  const renderProductColumn = (className: keyof ProductClass, title: string) => {
+    const allProductIds = products[className].map(p => `${className}-${p.id}`);
+    
+    return (
+      <Card className="h-full shadow-lg border-2 border-border/50 hover:border-primary/20 transition-all duration-300">
+        <CardHeader className={`bg-gradient-to-r ${getClassColor(className)} text-white`}>
+          <CardTitle className="text-center text-xl font-bold flex items-center justify-center gap-2">
+            <Package className="h-6 w-6" />
+            {title}
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getClassBadgeColor(className)} bg-white/20 text-white border-white/30`}>
+              {products[className].length}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent 
+          id={`droppable-${className}`}
+          className="p-4 space-y-4 bg-gradient-to-b from-card to-card/50"
+        >
+          {/* Drop Zone */}
+          <div className="min-h-[400px] max-h-[500px] overflow-y-auto space-y-3 p-2 border-2 border-dashed border-border/30 rounded-lg bg-background/50">
+            <SortableContext items={allProductIds} strategy={verticalListSortingStrategy}>
+              {products[className].length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                  <Package className="h-8 w-8 mb-2 opacity-50" />
+                  <p className="text-sm">Arraste produtos aqui ou adicione novos</p>
+                </div>
+              ) : (
+                products[className].map((product) => (
+                  <DraggableProduct
+                    key={product.id}
+                    product={product}
+                    className={className}
+                    onRemove={() => removeProduct(className, product.id)}
+                  />
+                ))
+              )}
+            </SortableContext>
+          </div>
+
+          {/* Add Product Input */}
+          <div className="flex gap-2 pt-3 border-t border-border/50">
+            <Input
+              placeholder="Digite a descrição do produto"
+              value={newProductInputs[className]}
+              onChange={(e) => handleInputChange(className, e.target.value)}
+              onKeyPress={(e) => handleKeyPress(e, className)}
+              className="flex-1 bg-background"
+            />
+            <Button
+              onClick={() => addProduct(className)}
+              size="sm"
+              className={`shrink-0 bg-gradient-to-r ${getClassColor(className)} hover:opacity-90 text-white shadow-md`}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-dashboard-bg">
@@ -288,11 +444,29 @@ export default function MixProdutos() {
         </div>
 
         {/* Product Classes Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {renderProductColumn("A", "CLASSE A", "bg-chart-1")}
-          {renderProductColumn("B", "CLASSE B", "bg-chart-2")}
-          {renderProductColumn("C", "CLASSE C", "bg-chart-3")}
-        </div>
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {renderProductColumn("A", "CLASSE A")}
+            {renderProductColumn("B", "CLASSE B")}
+            {renderProductColumn("C", "CLASSE C")}
+          </div>
+          
+          <DragOverlay>
+            {activeId ? (
+              <div className="flex items-center justify-between p-3 border-2 rounded-lg bg-card shadow-lg border-primary bg-primary/10 rotate-3 scale-105">
+                <div className="flex items-center gap-3 flex-1">
+                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  <Package className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Movendo produto...</span>
+                </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
 
         {/* Bottom Actions */}
         <Card>
