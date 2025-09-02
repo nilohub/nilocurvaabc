@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import MixProdutos from "./pages/MixProdutos";
 import NotFound from "./pages/NotFound";
 import TravelConnectSignIn from "./components/ui/travel-connect-signin";
 
@@ -34,6 +35,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireSupervisor>
                   <Index />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/mix-produtos" 
+              element={
+                <ProtectedRoute>
+                  <MixProdutos />
                 </ProtectedRoute>
               } 
             />

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Upload, BarChart3, TrendingUp, LogOut, User } from "lucide-react";
+import { Upload, BarChart3, TrendingUp, LogOut, User, Grid3X3 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -34,6 +34,16 @@ export function Header() {
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
+            </Button>
+            
+            <Button
+              variant={location.pathname === "/mix-produtos" ? "default" : "ghost"}
+              onClick={() => navigate("/mix-produtos")}
+              className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3"
+              size="sm"
+            >
+              <Grid3X3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Mix Produtos</span>
             </Button>
             
             {isSupervisor && (
