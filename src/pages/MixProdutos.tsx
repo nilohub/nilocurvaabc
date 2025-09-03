@@ -155,6 +155,12 @@ export default function MixProdutos() {
     loadSubgroups();
   }, []);
 
+  useEffect(() => {
+    if (selectedSubgroup) {
+      loadProductMix();
+    }
+  }, [selectedSubgroup]);
+
   const loadSubgroups = async () => {
     try {
       const { data: salesData, error } = await supabase
@@ -171,6 +177,39 @@ export default function MixProdutos() {
       toast({
         title: "Erro",
         description: "Erro ao carregar subgrupos",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const loadProductMix = async () => {
+    if (!selectedSubgroup) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('product_mix')
+        .select('*')
+        .eq('subgroup', selectedSubgroup)
+        .order('sort_order');
+
+      if (error) throw error;
+
+      const loadedProducts: ProductClass = { A: [], B: [], C: [] };
+      
+      data?.forEach((item) => {
+        const product: Product = {
+          id: item.id,
+          description: item.product_description
+        };
+        loadedProducts[item.class as keyof ProductClass].push(product);
+      });
+
+      setProducts(loadedProducts);
+    } catch (error) {
+      console.error('Error loading product mix:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar mix de produtos",
         variant: "destructive",
       });
     }
@@ -268,8 +307,35 @@ export default function MixProdutos() {
     }
 
     try {
-      // Here you would typically save to a database
-      // For now, we'll just show a success message
+      // Delete existing products for this subgroup
+      await supabase
+        .from('product_mix')
+        .delete()
+        .eq('subgroup', selectedSubgroup);
+
+      // Insert new products
+      const insertData = [];
+      let sortOrder = 0;
+
+      Object.entries(products).forEach(([className, productList]) => {
+        productList.forEach((product) => {
+          insertData.push({
+            subgroup: selectedSubgroup,
+            class: className,
+            product_description: product.description,
+            sort_order: sortOrder++
+          });
+        });
+      });
+
+      if (insertData.length > 0) {
+        const { error } = await supabase
+          .from('product_mix')
+          .insert(insertData);
+
+        if (error) throw error;
+      }
+
       toast({
         title: "Sucesso",
         description: `Mix de produtos do subgrupo "${selectedSubgroup}" salvo com sucesso!`,

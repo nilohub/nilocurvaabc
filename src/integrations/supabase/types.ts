@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      product_mix: {
+        Row: {
+          class: string
+          created_at: string
+          id: string
+          product_description: string
+          sort_order: number | null
+          subgroup: string
+          updated_at: string
+        }
+        Insert: {
+          class: string
+          created_at?: string
+          id?: string
+          product_description: string
+          sort_order?: number | null
+          subgroup: string
+          updated_at?: string
+        }
+        Update: {
+          class?: string
+          created_at?: string
+          id?: string
+          product_description?: string
+          sort_order?: number | null
+          subgroup?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sales_data: {
         Row: {
           created_at: string | null

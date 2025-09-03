@@ -1,5 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Line } from 'react-chartjs-2';
+import { useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -45,6 +47,8 @@ interface ProfitBRLChartProps {
 }
 
 export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
+  const [chartType, setChartType] = useState<'value' | 'percentage'>('value');
+  
   // Define months in correct order
   const monthNames = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -80,8 +84,8 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
     labels: orderedData.map(d => d.month),
     datasets: [
       {
-        label: 'Lucro (BRL)',
-        data: orderedData.map(d => d.value),
+        label: chartType === 'value' ? 'Lucro (BRL)' : 'Lucro (%)',
+        data: orderedData.map(d => chartType === 'value' ? d.value : d.percentage),
         borderColor: 'rgba(34, 197, 94, 1)',
         backgroundColor: 'rgba(34, 197, 94, 0.1)',
         fill: true,
@@ -121,10 +125,19 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
           label: function(context: any) {
             const dataIndex = context.dataIndex;
             const percentage = orderedData[dataIndex]?.percentage || 0;
-            return [
-              `${context.dataset.label}: R$ ${context.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-              `% Lucro/Faturamento: ${percentage.toFixed(1)}%`
-            ];
+            const value = orderedData[dataIndex]?.value || 0;
+            
+            if (chartType === 'value') {
+              return [
+                `${context.dataset.label}: R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+                `% Lucro/Faturamento: ${percentage.toFixed(1)}%`
+              ];
+            } else {
+              return [
+                `${context.dataset.label}: ${percentage.toFixed(1)}%`,
+                `Lucro: R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+              ];
+            }
           }
         }
       }
@@ -138,7 +151,11 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
             size: 11
           },
           callback: function(value: any) {
-            return `R$ ${value.toLocaleString('pt-BR')}`;
+            if (chartType === 'value') {
+              return `R$ ${value.toLocaleString('pt-BR')}`;
+            } else {
+              return `${value.toFixed(1)}%`;
+            }
           }
         },
         grid: {
@@ -168,10 +185,26 @@ export function ProfitBRLChart({ data }: ProfitBRLChartProps) {
   return (
     <Card className="shadow-card border-0 bg-gradient-card">
       <CardHeader>
-        <CardTitle>Lucro em BRL</CardTitle>
-        <CardDescription>
-          Lucro total por mês em Reais Brasileiros
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{chartType === 'value' ? 'Lucro em BRL' : 'Lucro em %'}</CardTitle>
+            <CardDescription>
+              {chartType === 'value' 
+                ? 'Lucro total por mês em Reais Brasileiros'
+                : 'Percentual de lucro por mês'
+              }
+            </CardDescription>
+          </div>
+          <Select value={chartType} onValueChange={(value: 'value' | 'percentage') => setChartType(value)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="value">Lucro BRL</SelectItem>
+              <SelectItem value="percentage">% Lucro</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <div style={{ position: 'relative', height: '400px' }}>
