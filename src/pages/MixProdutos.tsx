@@ -216,11 +216,41 @@ export default function MixProdutos() {
   };
 
   const addProduct = (className: keyof ProductClass) => {
+    if (!selectedSubgroup) {
+      toast({
+        title: "Atenção",
+        description: "Selecione um subgrupo antes de adicionar produtos",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const description = newProductInputs[className].trim();
-    if (!description) return;
+    if (!description) {
+      toast({
+        title: "Atenção",
+        description: "Digite a descrição do produto",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Verificar se o produto já existe na mesma classe
+    const existingProduct = products[className].find(
+      p => p.description.toLowerCase() === description.toLowerCase()
+    );
+    
+    if (existingProduct) {
+      toast({
+        title: "Atenção",
+        description: "Este produto já existe nesta classe",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const newProduct: Product = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       description
     };
 
@@ -233,6 +263,11 @@ export default function MixProdutos() {
       ...prev,
       [className]: ""
     }));
+
+    toast({
+      title: "Produto adicionado",
+      description: `"${description}" adicionado à Classe ${className}`,
+    });
   };
 
   const removeProduct = (className: keyof ProductClass, productId: string) => {
