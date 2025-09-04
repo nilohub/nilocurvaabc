@@ -111,9 +111,7 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fadeIn 0.5s ease-out',
 				'slide-up': 'slideUp 0.3s ease-out',
-				'pulse-glow': 'pulseGlow 2s infinite',
-				'shimmer': 'shimmer 2s linear infinite',
-				'float': 'float 3s ease-in-out infinite'
+				'pulse-glow': 'pulseGlow 2s infinite'
 			},
 			boxShadow: {
 				'card': 'var(--shadow-card)',
@@ -123,9 +121,7 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-card': 'var(--gradient-card)',
-				'gradient-success': 'var(--gradient-success)',
-				'gradient-chart': 'var(--gradient-chart)',
-				'shimmer': 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)'
+				'gradient-success': 'var(--gradient-success)'
 			}
 		}
 	},

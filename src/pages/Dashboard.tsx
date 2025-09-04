@@ -10,10 +10,7 @@ import { QuantityChart } from "@/components/charts/QuantityChart";
 import { StoreDistributionChart } from "@/components/charts/StoreDistributionChart";
 import { DataTable } from "@/components/DataTable";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, DollarSign, Package, Store, Users, Calculator, Tags, Grid, Filter, Download, BarChart3, Brain } from "lucide-react";
-import { TrendAnalysis } from "@/components/analytics/TrendAnalysis";
-import { PerformanceInsights } from "@/components/analytics/PerformanceInsights";
-import { ComparativeAnalysis } from "@/components/analytics/ComparativeAnalysis";
+import { TrendingUp, DollarSign, Package, Store, Users, Calculator, Tags, Grid, Filter, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface SalesData {
@@ -433,29 +430,6 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Análises Avançadas */}
-        <Card className="shadow-card border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-              <Brain className="h-5 w-5 sm:h-6 sm:w-6" />
-              Análises Avançadas & Insights
-            </CardTitle>
-            <CardDescription>
-              Análises inteligentes e insights sobre performance de vendas
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            {/* Análise de Tendências */}
-            <TrendAnalysis data={filteredData} />
-            
-            {/* Insights de Performance */}
-            <PerformanceInsights data={filteredData} />
-            
-            {/* Análise Comparativa */}
-            <ComparativeAnalysis data={filteredData} />
-          </CardContent>
-        </Card>
 
         {/* Charts */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">

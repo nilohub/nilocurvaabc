@@ -51,19 +51,18 @@ All colors MUST be HSL.
     --sidebar-bg: 0 0% 98%;
     --header-bg: 0 0% 100%;
     
-    /* Gradients modernos */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 50%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(217 91% 95%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 30%));
-    --gradient-chart: linear-gradient(135deg, hsl(217 91% 60%), hsl(280 100% 50%));
+    /* Gradients preto e branco */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 20%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 96%));
+    --gradient-success: linear-gradient(135deg, hsl(120 100% 25%), hsl(120 100% 20%));
     
-    /* Chart colors - paleta moderna e vibrante */
-    --chart-1: 217 91% 60%;  /* Azul moderno */
-    --chart-2: 142 76% 36%;  /* Verde profissional */
-    --chart-3: 280 100% 50%; /* Roxo vibrante */
-    --chart-4: 24 100% 50%;  /* Laranja elegante */
-    --chart-5: 330 81% 60%;  /* Rosa moderno */
-    --chart-6: 44 100% 50%;  /* Amarelo dourado */
+    /* Chart colors em escala de cinza */
+    --chart-1: 0 0% 20%;
+    --chart-2: 0 0% 35%;
+    --chart-3: 0 0% 50%;
+    --chart-4: 0 0% 65%;
+    --chart-5: 0 0% 80%;
+    --chart-6: 0 0% 10%;
     
     /* Shadows */
     --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -163,27 +162,9 @@ All colors MUST be HSL.
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 5px hsl(var(--chart-1) / 0.3);
+    box-shadow: 0 0 5px hsl(var(--primary-glow) / 0.3);
   }
   50% {
-    box-shadow: 0 0 20px hsl(var(--chart-1) / 0.6);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
+    box-shadow: 0 0 20px hsl(var(--primary-glow) / 0.6);
   }
 }
