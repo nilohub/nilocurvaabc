@@ -139,67 +139,67 @@ export function ComparativeAnalysis({ data }: ComparativeAnalysisProps) {
     <div className="space-y-6">
       {/* Métricas de Crescimento */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="shadow-card border-0">
+        <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-float">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Crescimento Mensal</p>
-                <p className={`text-xl font-bold ${valueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-xl font-bold transition-colors ${valueGrowth >= 0 ? 'text-chart-2' : 'text-destructive'}`}>
                   {valueGrowth >= 0 ? '+' : ''}{valueGrowth.toFixed(1)}%
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-chart-1" />
+              <TrendingUp className="h-8 w-8 text-chart-1 animate-pulse-glow" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-card border-0">
+        <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-float" style={{ animationDelay: '0.2s' }}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Evolução Lucro</p>
-                <p className={`text-xl font-bold ${profitGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-xl font-bold transition-colors ${profitGrowth >= 0 ? 'text-chart-2' : 'text-destructive'}`}>
                   {profitGrowth >= 0 ? '+' : ''}{profitGrowth.toFixed(1)}%
                 </p>
               </div>
-              <BarChart3 className="h-8 w-8 text-chart-2" />
+              <BarChart3 className="h-8 w-8 text-chart-2 animate-pulse-glow" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-card border-0">
+        <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-float" style={{ animationDelay: '0.4s' }}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Sessões Ativas</p>
-                <p className="text-xl font-bold text-foreground">
+                <p className="text-xl font-bold text-chart-3 transition-colors">
                   {sessionData.length}
                 </p>
               </div>
-              <Calendar className="h-8 w-8 text-chart-3" />
+              <Calendar className="h-8 w-8 text-chart-3 animate-pulse-glow" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-card border-0">
+        <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-float" style={{ animationDelay: '0.6s' }}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Subgrupos</p>
-                <p className="text-xl font-bold text-foreground">
+                <p className="text-xl font-bold text-chart-4 transition-colors">
                   {Object.keys(subgroupComparison).length}
                 </p>
               </div>
-              <Users className="h-8 w-8 text-chart-4" />
+              <Users className="h-8 w-8 text-chart-4 animate-pulse-glow" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Análises Comparativas */}
-      <Card className="shadow-card border-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300">
+        <CardHeader className="bg-gradient-primary text-primary-foreground rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-white">
             <BarChart3 className="h-5 w-5" />
             Análise Comparativa Detalhada
           </CardTitle>
@@ -241,32 +241,87 @@ export function ComparativeAnalysis({ data }: ComparativeAnalysisProps) {
               <div className="h-80">
                 <ChartContainer config={chartConfig} className="h-full w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={topSubgroups} layout="horizontal">
-                      <XAxis type="number" tick={{ fontSize: 12 }} />
+                    <BarChart data={topSubgroups} layout="horizontal" margin={{ left: 120, right: 30, top: 20, bottom: 5 }}>
+                      <XAxis 
+                        type="number" 
+                        tick={{ fontSize: 12 }} 
+                        tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`}
+                      />
                       <YAxis 
                         type="category" 
                         dataKey="subgroup" 
-                        tick={{ fontSize: 10 }} 
-                        width={100}
+                        tick={{ fontSize: 11 }} 
+                        width={115}
+                        tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
                       />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="value" fill="hsl(var(--chart-1))" />
+                      <ChartTooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-popover border border-border rounded-lg p-3 shadow-lg animate-fade-in">
+                                <p className="font-medium text-sm mb-2">{label}</p>
+                                <div className="space-y-1">
+                                  <p className="text-sm">
+                                    <span className="text-chart-1">Faturamento:</span> R$ {payload[0].value?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                  </p>
+                                  <p className="text-sm">
+                                    <span className="text-chart-2">Lucro:</span> R$ {payload[0].payload.profit?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                  </p>
+                                  <p className="text-sm">
+                                    <span className="text-chart-4">Margem:</span> {payload[0].payload.margin?.toFixed(1)}%
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar 
+                        dataKey="value" 
+                        fill="hsl(var(--chart-1))" 
+                        radius={[0, 4, 4, 0]}
+                        className="transition-all duration-300 hover:opacity-80"
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 {topSubgroups.slice(0, 6).map((sg: any, index) => (
-                  <div key={sg.subgroup} className="p-3 bg-muted/50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-sm truncate">{sg.subgroup}</h4>
-                      <Badge variant={sg.margin > 20 ? "default" : sg.margin > 15 ? "secondary" : "outline"}>
+                  <div 
+                    key={sg.subgroup} 
+                    className="group p-4 bg-gradient-to-br from-card to-card/50 rounded-lg border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-chart-1/30 hover:-translate-y-1"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className={`w-3 h-3 rounded-full bg-chart-${(index % 6) + 1} opacity-80 group-hover:opacity-100 transition-opacity`}
+                        />
+                        <h4 className="font-medium text-sm truncate group-hover:text-chart-1 transition-colors">
+                          {sg.subgroup}
+                        </h4>
+                      </div>
+                      <Badge 
+                        variant={sg.margin > 20 ? "default" : sg.margin > 15 ? "secondary" : "outline"}
+                        className="animate-pulse-glow"
+                      >
                         {sg.margin.toFixed(1)}%
                       </Badge>
                     </div>
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <p>Faturamento: R$ {sg.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-                      <p>Quantidade: {sg.quantity.toLocaleString('pt-BR')} un.</p>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Faturamento:</span>
+                        <span className="font-semibold text-chart-1">
+                          R$ {sg.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Quantidade:</span>
+                        <span className="font-medium">
+                          {sg.quantity.toLocaleString('pt-BR')} un.
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}

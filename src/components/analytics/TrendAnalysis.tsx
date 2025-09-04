@@ -91,9 +91,9 @@ export function TrendAnalysis({ data }: TrendAnalysisProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Tendência de Vendas */}
-      <Card className="shadow-card border-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-fade-in">
+        <CardHeader className="bg-gradient-primary text-primary-foreground rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-white">
             <Target className="h-5 w-5" />
             Análise de Tendência - Últimos 6 Meses
           </CardTitle>
@@ -111,16 +111,18 @@ export function TrendAnalysis({ data }: TrendAnalysisProps) {
                     dataKey="value" 
                     stroke="hsl(var(--chart-1))" 
                     fill="hsl(var(--chart-1))" 
-                    fillOpacity={0.3}
-                    strokeWidth={2}
+                    fillOpacity={0.4}
+                    strokeWidth={3}
+                    className="transition-all duration-300 hover:opacity-80"
                   />
                   <Area 
                     type="monotone" 
                     dataKey="profit" 
                     stroke="hsl(var(--chart-2))" 
                     fill="hsl(var(--chart-2))" 
-                    fillOpacity={0.3}
-                    strokeWidth={2}
+                    fillOpacity={0.4}
+                    strokeWidth={3}
+                    className="transition-all duration-300 hover:opacity-80"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -162,9 +164,9 @@ export function TrendAnalysis({ data }: TrendAnalysisProps) {
       </Card>
 
       {/* Performance por Sessão */}
-      <Card className="shadow-card border-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <CardHeader className="bg-gradient-chart text-primary-foreground rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-white">
             <TrendingUp className="h-5 w-5" />
             Performance por Sessão
           </CardTitle>

@@ -146,9 +146,9 @@ export function PerformanceInsights({ data }: PerformanceInsightsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Insights Inteligentes */}
-      <Card className="shadow-card border-0 lg:col-span-1">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="shadow-card border-0 lg:col-span-1 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-fade-in">
+        <CardHeader className="bg-gradient-success text-success-foreground rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-white">
             <Brain className="h-5 w-5" />
             Insights Inteligentes
           </CardTitle>
@@ -176,9 +176,9 @@ export function PerformanceInsights({ data }: PerformanceInsightsProps) {
       </Card>
 
       {/* Ranking de Lojas */}
-      <Card className="shadow-card border-0">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <CardHeader className="bg-gradient-primary text-primary-foreground rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-white">
             <Star className="h-5 w-5" />
             Ranking de Performance
           </CardTitle>
@@ -219,9 +219,9 @@ export function PerformanceInsights({ data }: PerformanceInsightsProps) {
       </Card>
 
       {/* Distribuição de Vendas */}
-      <Card className="shadow-card border-0">
-        <CardHeader>
-          <CardTitle>Distribuição de Vendas</CardTitle>
+      <Card className="shadow-card border-0 bg-gradient-card hover:shadow-lg transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+        <CardHeader className="bg-gradient-chart text-primary-foreground rounded-t-lg">
+          <CardTitle className="text-white">Distribuição de Vendas</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64">
