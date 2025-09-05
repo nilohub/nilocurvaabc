@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import MixProdutos from "./pages/MixProdutos";
+import Cotacao from "./pages/Cotacao";
 import NotFound from "./pages/NotFound";
 import TravelConnectSignIn from "./components/ui/travel-connect-signin";
 
@@ -43,6 +44,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MixProdutos />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/cotacao" 
+              element={
+                <ProtectedRoute>
+                  <Cotacao />
                 </ProtectedRoute>
               } 
             />

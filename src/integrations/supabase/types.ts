@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      quotations: {
+        Row: {
+          barcode: string
+          company_name: string
+          created_at: string
+          description: string
+          id: string
+          retail_price: number
+          subgroup: string
+          updated_at: string
+          wholesale_price: number | null
+        }
+        Insert: {
+          barcode: string
+          company_name: string
+          created_at?: string
+          description: string
+          id?: string
+          retail_price: number
+          subgroup: string
+          updated_at?: string
+          wholesale_price?: number | null
+        }
+        Update: {
+          barcode?: string
+          company_name?: string
+          created_at?: string
+          description?: string
+          id?: string
+          retail_price?: number
+          subgroup?: string
+          updated_at?: string
+          wholesale_price?: number | null
+        }
+        Relationships: []
+      }
       sales_data: {
         Row: {
           created_at: string | null
