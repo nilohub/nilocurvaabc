@@ -47,6 +47,7 @@ export type Database = {
       quotations: {
         Row: {
           barcode: string
+          buyer_name: string
           company_name: string
           created_at: string
           description: string
@@ -58,6 +59,7 @@ export type Database = {
         }
         Insert: {
           barcode: string
+          buyer_name?: string
           company_name: string
           created_at?: string
           description: string
@@ -69,6 +71,7 @@ export type Database = {
         }
         Update: {
           barcode?: string
+          buyer_name?: string
           company_name?: string
           created_at?: string
           description?: string
