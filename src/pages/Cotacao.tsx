@@ -55,7 +55,7 @@ export default function Cotacao() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [availableSubgroups, setAvailableSubgroups] = useState<string[]>([]);
-  const [buyers] = useState<string[]>(['João Silva', 'Maria Santos', 'Pedro Costa', 'Ana Oliveira', 'Carlos Ferreira']);
+  const [existingBuyers, setExistingBuyers] = useState<string[]>([]);
   const [newQuotation, setNewQuotation] = useState<NewQuotation>({
     barcode: "",
     description: "",
@@ -69,6 +69,7 @@ export default function Cotacao() {
   useEffect(() => {
     loadQuotations();
     loadSubgroups();
+    loadExistingBuyers();
   }, []);
 
   useEffect(() => {
@@ -109,6 +110,22 @@ export default function Cotacao() {
       setAvailableSubgroups(uniqueSubgroups);
     } catch (error) {
       console.error('Error loading subgroups:', error);
+    }
+  };
+
+  const loadExistingBuyers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('quotations')
+        .select('buyer_name')
+        .order('buyer_name');
+
+      if (error) throw error;
+      
+      const uniqueBuyers = [...new Set(data?.map(item => item.buyer_name) || [])];
+      setExistingBuyers(uniqueBuyers);
+    } catch (error) {
+      console.error('Error loading buyers:', error);
     }
   };
 
@@ -285,7 +302,7 @@ export default function Cotacao() {
                           <SelectValue placeholder="Selecionar comprador" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover border border-border z-50">
-                          {buyers.map((buyer) => (
+                          {existingBuyers.map((buyer) => (
                             <SelectItem key={buyer} value={buyer}>{buyer}</SelectItem>
                           ))}
                         </SelectContent>
@@ -484,71 +501,63 @@ export default function Cotacao() {
           </CardContent>
         </Card>
 
-        {/* Enhanced Quotations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Compact Quotations Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredQuotations.map((quotation, index) => (
             <Card key={quotation.id} className="group shadow-elegant border-0 bg-gradient-card hover:shadow-glow transition-all duration-500 hover:scale-105 animate-fade-in hover-scale" style={{ animationDelay: `${index * 100}ms` }}>
-              <CardHeader className="pb-4">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge variant="secondary" className="text-xs font-medium px-3 py-1 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
+              <CardHeader className="pb-2 px-3 pt-3">
+                <div className="flex justify-between items-start mb-1">
+                  <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border border-primary/20">
                     {quotation.subgroup}
                   </Badge>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    {format(new Date(quotation.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+                    {format(new Date(quotation.created_at), 'dd/MM', { locale: ptBR })}
                   </div>
                 </div>
-                <CardTitle className="text-base font-semibold line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                <CardTitle className="text-sm font-semibold line-clamp-2 leading-tight group-hover:text-primary transition-colors duration-300">
                   {quotation.description}
                 </CardTitle>
-                <div className="flex items-center gap-2 mt-2 p-2 bg-secondary/30 rounded-lg">
-                  <User className="h-4 w-4 text-chart-4" />
-                  <span className="text-sm font-medium text-chart-4">
+                <div className="flex items-center gap-1.5 mt-1 p-1.5 bg-secondary/30 rounded-md">
+                  <User className="h-3 w-3 text-chart-4" />
+                  <span className="text-xs font-medium text-chart-4 truncate">
                     {quotation.buyer_name}
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3 p-3 bg-secondary/20 rounded-xl border border-secondary/30">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Barcode className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm font-mono font-medium">{quotation.barcode}</span>
+              <CardContent className="space-y-2 px-3 pb-3">
+                <div className="flex items-center gap-2 p-2 bg-secondary/20 rounded-lg border border-secondary/30">
+                  <Barcode className="h-3 w-3 text-primary flex-shrink-0" />
+                  <span className="text-xs font-mono font-medium truncate">{quotation.barcode}</span>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-chart-2/10 to-chart-2/5 rounded-xl border border-chart-2/20 hover:border-chart-2/40 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-chart-2/20 rounded-lg">
-                        <DollarSign className="h-4 w-4 text-chart-2" />
-                      </div>
-                      <span className="text-sm font-semibold text-chart-2">Varejo</span>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-gradient-to-r from-chart-2/10 to-chart-2/5 rounded-lg border border-chart-2/20">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-3 w-3 text-chart-2" />
+                      <span className="text-xs font-semibold text-chart-2">Varejo</span>
                     </div>
-                    <span className="font-bold text-lg text-chart-2">
+                    <span className="font-bold text-sm text-chart-2">
                       R$ {quotation.retail_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
 
                   {quotation.wholesale_price && (
-                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-chart-3/10 to-chart-3/5 rounded-xl border border-chart-3/20 hover:border-chart-3/40 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-chart-3/20 rounded-lg">
-                          <Package className="h-4 w-4 text-chart-3" />
-                        </div>
-                        <span className="text-sm font-semibold text-chart-3">Atacado</span>
+                    <div className="flex items-center justify-between p-2 bg-gradient-to-r from-chart-3/10 to-chart-3/5 rounded-lg border border-chart-3/20">
+                      <div className="flex items-center gap-2">
+                        <Package className="h-3 w-3 text-chart-3" />
+                        <span className="text-xs font-semibold text-chart-3">Atacado</span>
                       </div>
-                      <span className="font-bold text-lg text-chart-3">
+                      <span className="font-bold text-sm text-chart-3">
                         R$ {quotation.wholesale_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 pt-3 border-t border-secondary/30">
-                  <div className="p-2 bg-muted/50 rounded-lg">
-                    <Building className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <span className="text-sm font-medium text-muted-foreground flex-1 truncate">
+                <div className="flex items-center gap-2 pt-2 border-t border-secondary/30">
+                  <Building className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                  <span className="text-xs font-medium text-muted-foreground truncate">
                     {quotation.company_name}
                   </span>
                 </div>
