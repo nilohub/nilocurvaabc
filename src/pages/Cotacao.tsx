@@ -8,10 +8,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Filter, DollarSign, Package, Building, Calendar, Barcode, Search, User, TrendingUp, Sparkles } from "lucide-react";
+import { Plus, Filter, DollarSign, Package, Building, Calendar, Barcode, Search, User, TrendingUp, Sparkles, CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useAuth, type User as AuthUser } from "@/contexts/AuthContext";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 interface Quotation {
   id: string;
@@ -23,6 +27,7 @@ interface Quotation {
   company_name: string;
   buyer_name: string;
   created_at: string;
+  custom_date?: string;
 }
 
 interface NewQuotation {
@@ -33,6 +38,7 @@ interface NewQuotation {
   wholesale_price: string;
   company_name: string;
   buyer_name: string;
+  custom_date: Date | undefined;
 }
 
 interface Filters {
@@ -44,6 +50,7 @@ interface Filters {
 
 export default function Cotacao() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [filteredQuotations, setFilteredQuotations] = useState<Quotation[]>([]);
   const [filters, setFilters] = useState<Filters>({
@@ -55,7 +62,7 @@ export default function Cotacao() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [availableSubgroups, setAvailableSubgroups] = useState<string[]>([]);
-  const [existingBuyers, setExistingBuyers] = useState<string[]>([]);
+  const [systemBuyers, setSystemBuyers] = useState<AuthUser[]>([]);
   const [newQuotation, setNewQuotation] = useState<NewQuotation>({
     barcode: "",
     description: "",
@@ -63,13 +70,14 @@ export default function Cotacao() {
     retail_price: "",
     wholesale_price: "",
     company_name: "",
-    buyer_name: ""
+    buyer_name: "",
+    custom_date: undefined
   });
 
   useEffect(() => {
     loadQuotations();
     loadSubgroups();
-    loadExistingBuyers();
+    loadSystemBuyers();
   }, []);
 
   useEffect(() => {
@@ -113,20 +121,24 @@ export default function Cotacao() {
     }
   };
 
-  const loadExistingBuyers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('quotations')
-        .select('buyer_name')
-        .order('buyer_name');
-
-      if (error) throw error;
-      
-      const uniqueBuyers = [...new Set(data?.map(item => item.buyer_name) || [])];
-      setExistingBuyers(uniqueBuyers);
-    } catch (error) {
-      console.error('Error loading buyers:', error);
-    }
+  const loadSystemBuyers = () => {
+    // Lista de compradores do sistema de autenticação
+    const buyers: AuthUser[] = [
+      { id: '1', name: 'DHIONE ALVES', code: '170', role: 'supervisor' },
+      { id: '2', name: 'FRANCISCO FILHO', code: '2689', role: 'supervisor' },
+      { id: '3', name: 'ANNYBAL R.', code: '3935', role: 'buyer' },
+      { id: '4', name: 'LENILDA', code: '582', role: 'buyer' },
+      { id: '5', name: 'ELITA S.', code: '437', role: 'buyer' },
+      { id: '6', name: 'ANTONIO F.', code: '3302', role: 'buyer' },
+      { id: '7', name: 'KATIELLEN', code: '2379', role: 'buyer' },
+      { id: '8', name: 'LINDIANE', code: '4698', role: 'buyer' },
+      { id: '9', name: 'JESSICA R.', code: '60', role: 'buyer' },
+      { id: '10', name: 'EULINO', code: '646', role: 'buyer' },
+      { id: '11', name: 'MARCELO H.', code: '4725', role: 'buyer' },
+      { id: '12', name: 'JOSE BARBOSA', code: '4722', role: 'buyer' },
+      { id: '13', name: 'ADRIAN H.', code: '3782', role: 'buyer' },
+    ];
+    setSystemBuyers(buyers);
   };
 
   const applyFilters = () => {
@@ -167,7 +179,8 @@ export default function Cotacao() {
     e.preventDefault();
     
     if (!newQuotation.barcode || !newQuotation.description || !newQuotation.subgroup || 
-        !newQuotation.retail_price || !newQuotation.company_name || !newQuotation.buyer_name) {
+        !newQuotation.retail_price || !newQuotation.company_name || !newQuotation.buyer_name || 
+        !newQuotation.custom_date) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
@@ -186,7 +199,8 @@ export default function Cotacao() {
           retail_price: parseFloat(newQuotation.retail_price),
           wholesale_price: newQuotation.wholesale_price ? parseFloat(newQuotation.wholesale_price) : null,
           company_name: newQuotation.company_name,
-          buyer_name: newQuotation.buyer_name
+          buyer_name: newQuotation.buyer_name,
+          created_at: newQuotation.custom_date?.toISOString()
         });
 
       if (error) throw error;
@@ -203,7 +217,8 @@ export default function Cotacao() {
         retail_price: "",
         wholesale_price: "",
         company_name: "",
-        buyer_name: ""
+        buyer_name: "",
+        custom_date: undefined
       });
       setIsDialogOpen(false);
       loadQuotations();
@@ -302,12 +317,48 @@ export default function Cotacao() {
                           <SelectValue placeholder="Selecionar comprador" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover border border-border z-50">
-                          {existingBuyers.map((buyer) => (
-                            <SelectItem key={buyer} value={buyer}>{buyer}</SelectItem>
+                          {systemBuyers.map((buyer) => (
+                            <SelectItem key={buyer.id} value={buyer.name}>
+                              {buyer.name} ({buyer.code})
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4" />
+                      Data da Cotação *
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal transition-all duration-200 focus:scale-[1.02]",
+                            !newQuotation.custom_date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {newQuotation.custom_date ? (
+                            format(newQuotation.custom_date, "dd/MM/yyyy", { locale: ptBR })
+                          ) : (
+                            <span>Selecionar data</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={newQuotation.custom_date}
+                          onSelect={(date) => setNewQuotation({...newQuotation, custom_date: date})}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   </div>
 
                   <div className="space-y-2">
