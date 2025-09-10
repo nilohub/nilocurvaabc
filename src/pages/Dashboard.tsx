@@ -4,10 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
-import { RevenueChart } from "@/components/charts/RevenueChart";
-import { ProfitBRLChart } from "@/components/charts/ProfitBRLChart";
-import { QuantityChart } from "@/components/charts/QuantityChart";
-import { StoreDistributionChart } from "@/components/charts/StoreDistributionChart";
+import { SmallProfitChart } from "@/components/charts/SmallProfitChart";
+import { SmallSalesChart } from "@/components/charts/SmallSalesChart";
 import { DataTable } from "@/components/DataTable";
 import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp, DollarSign, Package, Store, Users, Calculator, Tags, Grid, Filter, Download } from "lucide-react";
@@ -30,7 +28,6 @@ interface SalesData {
 }
 
 interface Filters {
-  store: string;
   month: string;
   year: string;
   session: string;
@@ -42,7 +39,6 @@ export default function Dashboard() {
   const [data, setData] = useState<SalesData[]>([]);
   const [filteredData, setFilteredData] = useState<SalesData[]>([]);
   const [filters, setFilters] = useState<Filters>({
-    store: "",
     month: "",
     year: "",
     session: "",
@@ -96,9 +92,6 @@ export default function Dashboard() {
   const applyFilters = () => {
     let filtered = [...data];
 
-    if (filters.store) {
-      filtered = filtered.filter(item => item.store === filters.store);
-    }
     if (filters.month) {
       filtered = filtered.filter(item => item.month === filters.month);
     }
@@ -116,7 +109,7 @@ export default function Dashboard() {
   };
 
   const clearFilters = () => {
-    setFilters({ store: "", month: "", year: "", session: "", subgroup: "" });
+    setFilters({ month: "", year: "", session: "", subgroup: "" });
   };
 
   const exportData = () => {
@@ -209,20 +202,7 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-4">
-              <div>
-                <Select value={filters.store} onValueChange={(value) => setFilters({...filters, store: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecionar Loja" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border border-border z-50">
-                    {availableFilters.stores.map((store) => (
-                      <SelectItem key={store} value={store}>{store}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
               <div>
                 <Select value={filters.month} onValueChange={(value) => setFilters({...filters, month: value})}>
                   <SelectTrigger>
@@ -281,10 +261,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {(filters.store || filters.month || filters.year || filters.session || filters.subgroup) && (
+            {(filters.month || filters.year || filters.session || filters.subgroup) && (
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">Filtros ativos:</span>
-                {filters.store && <Badge variant="secondary">{filters.store}</Badge>}
                 {filters.month && <Badge variant="secondary">{months.find(m => m.value === filters.month)?.label}</Badge>}
                 {filters.year && <Badge variant="secondary">{filters.year}</Badge>}
                 {filters.session && <Badge variant="secondary">{filters.session}</Badge>}
@@ -431,15 +410,71 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-          <ProfitBRLChart data={filteredData} />
-          <RevenueChart data={filteredData} />
-        </div>
+        {/* Charts per Store */}
+        <div className="space-y-6">
+          {/* Profit Charts Section */}
+          <Card className="shadow-card border-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-center text-red-600 text-lg font-bold">
+                LUCRO BRL / %
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                {availableFilters.stores.map((store) => (
+                  <Card key={`profit-${store}`} className="border border-red-500">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-center text-sm font-medium text-red-600">
+                        {store}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <SmallProfitChart data={filteredData} storeName={store} />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-          <QuantityChart data={filteredData} />
-          <StoreDistributionChart data={filteredData} />
+          {/* Sales Charts Section */}
+          <Card className="shadow-card border-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-center text-red-600 text-lg font-bold">
+                VENDAS EM UNIDADES
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                {availableFilters.stores.map((store) => (
+                  <Card key={`sales-${store}`} className="border border-red-500">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-center text-sm font-medium text-red-600">
+                        {store}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <SmallSalesChart data={filteredData} storeName={store} />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Statistics Section */}
+          <Card className="shadow-card border-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-center text-red-600 text-lg font-bold">
+                DADOS ESTATÍSTICOS DE RENTABILIDADE EM RELAÇÃO AO MÊS ANTERIOR
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center text-muted-foreground">
+                <p>Seção em desenvolvimento - dados comparativos serão exibidos aqui</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Data Table */}
